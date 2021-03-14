@@ -7,6 +7,7 @@ from replit import db # connection to the db
 
 client = discord.Client()
 
+# list of trigger words
 sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing"]
 
 # list of encouraging messages
@@ -18,13 +19,6 @@ starter_encouragements = [
 
 if "responding" not in db.keys():
   db["responding"] = True
-
-# api call for random quote
-def get_quote():
-  response = requests.get("https://zenquotes.io/api/random")
-  json_data = json.loads(response.text)
-  quote = json_data[0]['q'] + " -" + json_data[0]['a']
-  return(quote)
 
 # add a encouraging message to the db
 def update_encouragements(encouraging_message):
@@ -47,12 +41,20 @@ def delete_encouragment(index):
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
 
+# api call for random quote
+def get_quote():
+  response = requests.get("https://zenquotes.io/api/random")
+  json_data = json.loads(response.text)
+  quote = json_data[0]['q'] + " - " + json_data[0]['a']
+  return(quote)
+
 @client.event
 async def on_message(message):
+  # check if the message is from the bot
   if message.author == client.user:
     return
 
-  msg = message.content
+  msg = message.content # more readable code
 
   if msg.startswith('$inspire'):
     quote = get_quote()
